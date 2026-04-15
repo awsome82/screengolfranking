@@ -2,8 +2,10 @@ import requests
 import re
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from collections import defaultdict, Counter
+
+KST = timezone(timedelta(hours=9))
 
 TARGET_COURSE = "베어리버 리버"
 START_DATE    = "2026-04-08"
@@ -184,7 +186,7 @@ for gserial, ccid, game_date in all_rounds:
 # JSON 저장
 # ---------------------------
 result = {
-    "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
+    "updated_at": datetime.now(KST).strftime("%Y-%m-%d %H:%M"),
     "course": TARGET_COURSE,
     "valid_rounds": valid_rounds,
     "unique_players": len(play_counts["M"]) + len(play_counts["F"]),
