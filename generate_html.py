@@ -6,6 +6,12 @@ KST = timezone(timedelta(hours=9))
 with open("data.json", encoding="utf-8") as f:
     d = json.load(f)
 
+# ── 아래 두 값만 본인 것으로 교체 ──────────────────────
+GITHUB_OWNER = "YOUR_GITHUB_USERNAME"   # 예: lyongii
+GITHUB_REPO  = "golf-ranking"
+GITHUB_PAT   = "YOUR_PAT_TOKEN"         # ghp_xxxx...
+# ───────────────────────────────────────────────────────
+
 MEDAL = {1: "🥇", 2: "🥈", 3: "🥉"}
 
 def rows(items, show_count=False):
@@ -41,14 +47,12 @@ html = f"""<!DOCTYPE html>
 <title>⛳ {d['course']} 랭킹</title>
 <style>
   * {{ box-sizing: border-box; margin: 0; padding: 0; }}
-
   body {{
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: #f0f4f0;
     color: #1a1a1a;
     padding-bottom: 2rem;
   }}
-
   header {{
     background: linear-gradient(135deg, #1a7f4b, #2ecc71);
     color: white;
@@ -59,9 +63,7 @@ html = f"""<!DOCTYPE html>
     z-index: 100;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   }}
-
   header h1 {{ font-size: 1.2rem; font-weight: 700; }}
-
   .header-sub {{
     display: flex;
     align-items: center;
@@ -70,12 +72,7 @@ html = f"""<!DOCTYPE html>
     margin-top: 0.35rem;
     flex-wrap: wrap;
   }}
-
-  .header-sub p {{
-    font-size: 0.78rem;
-    opacity: 0.9;
-  }}
-
+  .header-sub p {{ font-size: 0.78rem; opacity: 0.9; }}
   #update-btn {{
     background: rgba(255,255,255,0.25);
     border: 1px solid rgba(255,255,255,0.6);
@@ -91,10 +88,8 @@ html = f"""<!DOCTYPE html>
     transition: background 0.2s;
     white-space: nowrap;
   }}
-
   #update-btn:hover {{ background: rgba(255,255,255,0.35); }}
   #update-btn:disabled {{ opacity: 0.5; cursor: not-allowed; }}
-
   .spinner {{
     display: inline-block;
     width: 12px; height: 12px;
@@ -104,7 +99,6 @@ html = f"""<!DOCTYPE html>
     animation: spin 0.7s linear infinite;
   }}
   @keyframes spin {{ to {{ transform: rotate(360deg); }} }}
-
   #toast {{
     position: fixed;
     bottom: 1.5rem;
@@ -122,7 +116,6 @@ html = f"""<!DOCTYPE html>
     white-space: nowrap;
   }}
   #toast.show {{ opacity: 1; }}
-
   .tabs {{
     display: flex;
     background: #fff;
@@ -134,7 +127,6 @@ html = f"""<!DOCTYPE html>
     scrollbar-width: none;
   }}
   .tabs::-webkit-scrollbar {{ display: none; }}
-
   .tab {{
     flex: 1;
     min-width: 80px;
@@ -148,27 +140,20 @@ html = f"""<!DOCTYPE html>
     white-space: nowrap;
     transition: all 0.2s;
   }}
-  .tab.active {{
-    color: #1a7f4b;
-    border-bottom-color: #1a7f4b;
-  }}
-
+  .tab.active {{ color: #1a7f4b; border-bottom-color: #1a7f4b; }}
   .section {{ display: none; padding: 0.8rem; }}
   .section.active {{ display: block; }}
-
   .grid {{
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.7rem;
   }}
-
   .card {{
     background: #fff;
     border-radius: 14px;
     padding: 0.9rem 0.8rem;
     box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   }}
-
   .card-title {{
     font-size: 0.82rem;
     font-weight: 700;
@@ -177,15 +162,12 @@ html = f"""<!DOCTYPE html>
     padding-bottom: 0.4rem;
     border-bottom: 1px solid #e8f5e9;
   }}
-
   table {{ width: 100%; border-collapse: collapse; }}
-
   td {{
     padding: 0.35rem 0.2rem;
     font-size: 0.88rem;
     vertical-align: middle;
   }}
-
   .rank-cell {{ width: 28px; text-align: center; }}
   .rank-num {{
     display: inline-block;
@@ -199,10 +181,8 @@ html = f"""<!DOCTYPE html>
     color: #666;
   }}
   .name-cell {{ font-weight: 600; }}
-  .count     {{ font-size: 0.78rem; color: #888; }}
-
+  .count {{ font-size: 0.78rem; color: #888; }}
   tr:not(:last-child) td {{ border-bottom: 1px solid #f5f5f5; }}
-
   .stats {{
     display: flex;
     gap: 0.7rem;
@@ -225,7 +205,7 @@ html = f"""<!DOCTYPE html>
 <header>
   <h1>⛳ {d['course']} 랭킹</h1>
   <div class="header-sub">
-    <p id="updated-text">업데이트: {d['updated_at']} &nbsp;|&nbsp; {d['valid_rounds']}라운드 · {d['unique_players']}명</p>
+    <p>업데이트: {d['updated_at']} &nbsp;|&nbsp; {d['valid_rounds']}라운드 · {d['unique_players']}명</p>
     <button id="update-btn" onclick="triggerUpdate()">
       <span id="btn-icon">🔄</span> 업데이트
     </button>
@@ -272,7 +252,10 @@ html = f"""<!DOCTYPE html>
 </div>
 
 <script>
-  // ── 탭 전환 ──────────────────────────────────────────
+  const GITHUB_OWNER = "{GITHUB_OWNER}";
+  const GITHUB_REPO  = "{GITHUB_REPO}";
+  const GITHUB_PAT   = "{GITHUB_PAT}";
+
   function show(id, el) {{
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -280,20 +263,12 @@ html = f"""<!DOCTYPE html>
     el.classList.add('active');
   }}
 
-  // ── 토스트 메시지 ──────────────────────────────────
-  function toast(msg, duration=3000) {{
+  function toast(msg, duration=3500) {{
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), duration);
   }}
-
-  // ── GitHub Actions 트리거 ──────────────────────────
-  // GitHub Personal Access Token (repo scope 필요)
-  // 아래 두 값을 본인 것으로 교체하세요
-  const GITHUB_OWNER = "YOUR_GITHUB_USERNAME";   // ← 본인 GitHub 아이디
-  const GITHUB_REPO  = "golf-ranking";            // ← 레포 이름
-  const GITHUB_PAT   = "YOUR_PAT_TOKEN";          // ← 발급받은 PAT
 
   async function triggerUpdate() {{
     const btn  = document.getElementById('update-btn');
@@ -301,11 +276,11 @@ html = f"""<!DOCTYPE html>
 
     btn.disabled = true;
     icon.outerHTML = '<span class="spinner" id="btn-icon"></span>';
-    toast("업데이트 요청 중...", 2000);
+    toast("⏳ 업데이트 요청 중...", 2000);
 
     try {{
       const res = await fetch(
-        `https://api.github.com/repos/${{GITHUB_OWNER}}/${{GITHUB_REPO}}/actions/workflows/update.yml/dispatches`,
+        `https://api.github.com/repos/${{GITHUB_OWNER}}/${{GITHUB_REPO}}/dispatches`,
         {{
           method: "POST",
           headers: {{
@@ -313,27 +288,29 @@ html = f"""<!DOCTYPE html>
             "Accept": "application/vnd.github+json",
             "Content-Type": "application/json",
           }},
-          body: JSON.stringify({{ ref: "main" }}),
+          body: JSON.stringify({{ event_type: "trigger-update" }}),
         }}
       );
 
       if (res.status === 204) {{
-        toast("✅ 업데이트 시작! 약 1~2분 후 새로고침하세요.");
-        // 2분 후 자동 새로고침
-        setTimeout(() => location.reload(), 120000);
+        toast("✅ 업데이트 시작! 약 2분 후 새로고침됩니다.");
+        setTimeout(() => location.reload(), 130000);
       }} else {{
         const err = await res.json().catch(() => ({{}}));
         toast("❌ 오류: " + (err.message || res.status));
+        resetBtn();
       }}
     }} catch(e) {{
-      toast("❌ 네트워크 오류: " + e.message);
-    }} finally {{
-      setTimeout(() => {{
-        const spinner = document.getElementById('btn-icon');
-        if (spinner) spinner.outerHTML = '<span id="btn-icon">🔄</span>';
-        btn.disabled = false;
-      }}, 5000);
+      toast("❌ 네트워크 오류");
+      resetBtn();
     }}
+  }}
+
+  function resetBtn() {{
+    const btn = document.getElementById('update-btn');
+    const icon = document.getElementById('btn-icon');
+    if (icon) icon.outerHTML = '<span id="btn-icon">🔄</span>';
+    btn.disabled = false;
   }}
 </script>
 </body>
