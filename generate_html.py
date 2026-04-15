@@ -7,7 +7,7 @@ with open("data.json", encoding="utf-8") as f:
     d = json.load(f)
 
 # ── 아래 두 값만 본인 것으로 교체 ──────────────────────
-GITHUB_OWNER = "YOUR_GITHUB_USERNAME"   # 예: lyongii
+GITHUB_OWNER = "awsome82"   # 예: lyongii
 GITHUB_REPO  = "golf-ranking"
 GITHUB_PAT   = "YOUR_PAT_TOKEN"         # ghp_xxxx...
 # ───────────────────────────────────────────────────────
