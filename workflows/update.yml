@@ -1,0 +1,39 @@
+name: Update Golf Ranking
+
+on:
+  schedule:
+    - cron: '0 13 * * *'   # 매일 22:00 KST (UTC+9 → UTC 13:00)
+  workflow_dispatch:         # 수동 실행 버튼도 유지
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run ranking script
+        env:
+          SG_ID: ${{ secrets.SG_ID }}
+          SG_PW: ${{ secrets.SG_PW }}
+        run: python golf_ranking.py
+
+      - name: Generate HTML
+        run: python generate_html.py
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          publish_branch: gh-pages
+          include_files: index.html
