@@ -62,7 +62,8 @@ def best_record(records):
 def get_top(table, top_n=12):
     candidates = [(p, best_record(recs)) for p, recs in table.items()]
     ranked = sorted(candidates, key=lambda x: backcount_key(x[1]))[:top_n]
-    return [{"rank": r, "name": p} for r, (p, _) in enumerate(ranked, 1)]
+    return [{"rank": r, "name": p, "score": rec["score"]}
+            for r, (p, rec) in enumerate(ranked, 1)]
 
 def get_most_played(counter, top_n=10):
     return [{"rank": r, "name": p, "count": c}
