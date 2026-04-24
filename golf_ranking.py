@@ -88,7 +88,7 @@ assert login(), "로그인 실패"
 resp = session.get(
     BASE_URL,
     params={"menuId": "57", "parentId": "33", "time_start1": START_DATE},
-    headers=HEADERS
+    headers=HEADERS,
     verify=False        # ← 추가
 
 )
@@ -102,7 +102,7 @@ for page in range(1, total_pages + 1):
         BASE_URL,
         params={"menuId": "57", "parentId": "33",
                 "time_start1": START_DATE, "pageIndex": page},
-        headers=HEADERS
+        headers=HEADERS,
         verify=False        # ← 추가
     ).text
     rows = re.findall(r"<tr.*?>(.*?)</tr>", page_html, re.DOTALL)
